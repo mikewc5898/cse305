@@ -1,11 +1,13 @@
 package dao;
 
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import model.Order;
 import model.Employee;
@@ -26,7 +28,7 @@ public class MovieDao {
 				
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?user=mwcoulter");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT * From Movie M");
 			while(rs.next()) {
@@ -57,7 +59,7 @@ public class MovieDao {
 		Movie movie = new Movie();
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?user=mwcoulter");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT * From Movie M WHERE M.Id = " + Integer.valueOf(movieID));
 			rs.next();
@@ -86,21 +88,19 @@ public class MovieDao {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?user=mwcoulter");
-			Statement st = con.createStatement();
-			ResultSet rs = st.executeQuery("START TRANSACTION; " + 
-					"INSERT INTO `mwcoulter`.`Movie` " + 
-					"(`Id`, " + 
-					"`Name`, " + 
-					"`MType`, " + 
-					"`Rating`, " + 
-					"`DistrFee`, " + 
-					"`NumCopies`) " + 
-					"VALUES " + 
-					"(" + movie.getMovieID() +"," + movie.getMovieName() +
-					","+ movie.getMovieType() +"," + movie.getRating() +"," +
-					movie.getDistFee()+","+ movie.getNumCopies()+"); " +
-					"COMMIT;");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
+			PreparedStatement st = con.prepareStatement(
+					"INSERT INTO mwcoulter.Movie (Id, Name, MType, Rating, DistrFee, NumCopies) " +
+					"VALUES (?,?,?,?,?,?);");
+			Random r = new Random();
+			int rand = r.nextInt((1000000-4) + 1) + 4;
+			st.setInt(1,rand);
+			st.setString(2, movie.getMovieName());
+			st.setString(3, movie.getMovieType());
+			st.setInt(4, movie.getRating());
+			st.setInt(5, movie.getDistFee());
+			st.setInt(6,movie.getNumCopies());
+			st.executeUpdate();
 		}
 		catch(Exception e) {
 			System.out.println(e);
@@ -121,19 +121,19 @@ public class MovieDao {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?user=mwcoulter");
-			Statement st = con.createStatement();
-			ResultSet rs = st.executeQuery(
-					"START TRANSACTION; "+
-					"UPDATE mwcoulter.Movie " +
-					"SET " +
-					"`Rating` = " + movie.getRating()+", " +
-					"`DistrFee` = " +movie.getDistFee() +", " +
-					"`NumCopies` = " + movie.getNumCopies() + ", " +
-					"`Name` = " + movie.getMovieName() + ", " +
-					"`MType` = " + movie.getMovieType() + ", " +
-					"WHERE `Id` = " + movie.getMovieID() + "; " +
-					"COMMIT;");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
+			PreparedStatement st = con.prepareStatement
+				    ("UPDATE mwcoulter.Movie SET Rating = ?,"
+				    		+ " DistrFee = ?, NumCopies = ?, "
+				    		+ "MType = ? WHERE Name = ?");
+
+				st.setInt(1, movie.getRating());
+				st.setInt(2, movie.getDistFee());
+				st.setInt(3, movie.getNumCopies());
+				st.setString(4,movie.getMovieType());
+				st.setString(5, movie.getMovieName());
+				st.executeUpdate();
+				
 		}
 		catch(Exception e) {
 			System.out.println(e);
@@ -152,13 +152,12 @@ public class MovieDao {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?user=mwcoulter");
-			Statement st = con.createStatement();
-			ResultSet rs = st.executeQuery(
-					"START TRANSACTION; "+
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
+			PreparedStatement st = con.prepareStatement(
 					"DELETE FROM mwcoulter.Movie " +
-					"WHERE `Id` = " + Integer.valueOf(movieID) + "; " +
-					"COMMIT;");
+					"WHERE Id = ?");
+			st.setInt(1, Integer.valueOf(movieID));
+			st.executeUpdate();
 		}
 		catch(Exception e) {
 			System.out.println(e);
@@ -180,7 +179,7 @@ public class MovieDao {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?user=mwcoulter");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery(
 					"SELECT M.Id, M.Name, M.MType, M.Rating, M.DistrFee, M.NumCopies, COUNT(*) " +
@@ -366,7 +365,7 @@ public List<Movie> getQueueOfMovies(String customerID){
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?user=mwcoulter");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT DISTINCT M.MType From Movie M");
 			while(rs.next()) {
@@ -459,6 +458,7 @@ public List<Movie> getQueueOfMovies(String customerID){
 				
 		/*Sample data begins*/
 		for (int i = 0; i < 4; i++) {
+			System.out.println("SUP");
 			Movie movie = new Movie();
 			movie.setMovieID(1);
 			movie.setMovieName("The Godfather");
@@ -481,12 +481,12 @@ public List<Movie> getQueueOfMovies(String customerID){
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?user=mwcoulter");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery(
 					"SELECT M.Id, M.Name, M.MType, M.Rating, M.DistrFee, M.NumCopies " +
 					"FROM Movie M, Rental R " +
-					"WHERE M.Id = R.MovieId AND M.Name = " + movieName +";");
+					"WHERE M.Id = R.MovieId AND M.Name = " + "\'" + movieName + "\'");
 			while(rs.next()) {
 				Movie movie = new Movie();
 				movie.setMovieName(rs.getString("Name"));
@@ -515,15 +515,19 @@ public List<Movie> getQueueOfMovies(String customerID){
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?user=mwcoulter");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery(
 					"SELECT M.Id, M.Name, M.MType, M.Rating, M.DistrFee, M.NumCopies " +
-					"FROM Movie M, Rental R, Account A, Rental R" +
+					"FROM Movie M, Person P, Account A, Rental R " +
 					"WHERE R.AccountId = A.Id AND A.Customer = P.SSN "  + 
-					"AND P.LastName = " + customerName.substring(0,customerName.indexOf(" "))+
-					" AND P.FirstName = " +customerName.substring(customerName.indexOf(" ") + 1,customerName.length()) + ";");
+					"AND P.FirstName = " + "\'" + customerName.substring(0,customerName.indexOf(" "))+ "\'" +
+					" AND M.Id = R.MovieId " + 
+					" AND P.LastName = " + "\'" + customerName.substring(customerName.indexOf(" ") + 1,customerName.length()) + "\'" + ";");
+			int i = 0;
 			while(rs.next()) {
+				System.out.println(i);
+				i++;
 				Movie movie = new Movie();
 				movie.setMovieName(rs.getString("Name"));
 				movie.setMovieID(rs.getInt("Id"));
@@ -552,12 +556,12 @@ public List<Movie> getQueueOfMovies(String customerID){
 				
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?user=mwcoulter");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery(
 					"SELECT M.Id, M.Name, M.MType, M.Rating, M.DistrFee, M.NumCopies " +
 					"FROM Movie M, Rental R " +
-					"WHERE M.Id = R.MovieId AND M.MType = " + movieType +";");
+					"WHERE M.Id = R.MovieId AND M.MType = " + "\'" + movieType + "\'" +";");
 			while(rs.next()) {
 				Movie movie = new Movie();
 				movie.setMovieName(rs.getString("Name"));
@@ -567,6 +571,7 @@ public List<Movie> getQueueOfMovies(String customerID){
 				movie.setRating(rs.getInt("Rating"));
 				movie.setDistFee((int)rs.getFloat("DistrFee"));
 				movies.add(movie);
+				System.out.println(movies.size());
 			}
 		}
 		catch(Exception e) {

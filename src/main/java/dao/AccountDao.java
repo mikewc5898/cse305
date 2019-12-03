@@ -26,9 +26,9 @@ public class AccountDao {
 			int income = 0;
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
-				Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?user=mwcoulter");
+				Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
 				Statement st = con.createStatement();
-				st.executeQuery(
+				st.executeUpdate(
 						"CREATE OR REPLACE VIEW feetable AS " +
 						"SELECT EXTRACT(YEAR_MONTH FROM O.RDate) AS Date, CASE "+
 						"WHEN A.AcctType = 'limited' THEN 10 " +
@@ -44,7 +44,7 @@ public class AccountDao {
 				String year = date.substring(date.indexOf("-") + 1,date.length());
 				String yearMonth = year.concat(month);
 				ResultSet rs = st.executeQuery(
-						"SELECT F.Date, SUM(F.fee) "+
+						"SELECT F.Date, SUM(F.fee) AS Sum "+
 						"FROM feetable F "+
 						"WHERE F.Date =" + yearMonth +
 						" group by F.Date;");

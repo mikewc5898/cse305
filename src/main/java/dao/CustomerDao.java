@@ -64,14 +64,14 @@ public class CustomerDao {
 		Customer customer = new Customer();
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?user=mwcoulter");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery(
 					"SELECT C.Id, P.FirstName, P.LastName, C.Email " +
 					"FROM Person P, Rental R, Account A, Customer C " +
-					"WHERE  R.AccountId = A.Id AND A.Customer = P.SSN  AND A.Customer = C.Id" +
+					"WHERE  R.AccountId = A.Id AND A.Customer = P.SSN  AND A.Customer = C.Id " +
 					"group by P.FirstName, P.LastName " +
-					"ORDER BY COUNT(*) DESC; "
+					"ORDER BY COUNT(*) DESC"
 					);
 			rs.next();
 			customer.setCustomerID(String.valueOf(rs.getInt("Id")));
