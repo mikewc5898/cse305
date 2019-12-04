@@ -2,6 +2,7 @@ package dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -64,10 +65,22 @@ public class AccountDao {
 	
 	public String setAccount(String customerID, String accountType) {
 
-		
-		/*Sample data begins*/
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
+			PreparedStatement st = con.prepareStatement(
+					"UPDATE mwcoulter.Account SET AcctType = ? WHERE Customer = ?");
+			st.setString(1, accountType);
+			st.setInt(2, Integer.valueOf(customerID));
+			st.executeUpdate();
+			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e);
+			return "failure";
+		}
 		return "success";
-		/*Sample data ends*/
 
 	}
 	

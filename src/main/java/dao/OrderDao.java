@@ -1,5 +1,13 @@
 package dao;
 
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,21 +23,22 @@ public class OrderDao {
 		
 		List<Order> orders = new ArrayList<Order>();
 		
-		/*
-		 * The students code to fetch data from the database will be written here
-		 * Each record is required to be encapsulated as a "Order" class object and added to the "orders" ArrayList
-		 * Query to get data about all the orders should be implemented
-		 */
-		
-		/*Sample data begins*/
-		for (int i = 0; i < 10; i++) {
-			Order order = new Order();
-			order.setOrderID(1);
-			order.setDateTime("11-11-09 10:00");
-			order.setReturnDate("11-14-09");
-			orders.add(order);
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
+			Statement st = con.createStatement();
+			ResultSet rs = st.executeQuery("SELECT * FROM Orders");
+			while(rs.next()) {
+				Order order = new Order();
+				order.setOrderID(rs.getInt("Id"));
+				order.setDateTime(rs.getString("RDate"));
+				order.setReturnDate(rs.getString("ReturnDate"));
+				orders.add(order);
+			}
 		}
-		/*Sample data ends*/
+		catch(Exception e) {
+			System.out.println(e);
+		}
 		
 		return orders;
 
@@ -46,15 +55,24 @@ public class OrderDao {
 		 * customerID is the customer's primary key, given as method parameter
 		 */
 		
-		/*Sample data begins*/
-		for (int i = 0; i < 10; i++) {
-			Order order = new Order();
-			order.setOrderID(1);
-			order.setDateTime("11-11-09 10:00");
-			order.setReturnDate("11-14-09");
-			orders.add(order);
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
+			Statement st = con.createStatement();
+			ResultSet rs = st.executeQuery("SELECT RO.* " + 
+					"FROM  Rental R, Account A, Orders RO " + 
+					"WHERE A.Id=R.AccountId AND R.OrderId=RO.Id AND A.Customer="+Integer.valueOf(customerID));
+			while(rs.next()) {
+				Order order = new Order();
+				order.setOrderID(rs.getInt("Id"));
+				order.setDateTime(rs.getString("RDate"));
+				order.setReturnDate(rs.getString("ReturnDate"));
+				orders.add(order);
+			}
 		}
-		/*Sample data ends*/
+		catch(Exception e) {
+			System.out.println(e);
+		}
 		
 		return orders;
 
@@ -70,15 +88,26 @@ public class OrderDao {
 		 * employeeEmail is the email ID of the customer representative, which is given as method parameter
 		 */
 		
-		/*Sample data begins*/
-		for (int i = 0; i < 10; i++) {
-			Order order = new Order();
-			order.setOrderID(1);
-			order.setDateTime("11-11-09 10:00");
-			order.setReturnDate("11-14-09");
-			orders.add(order);
+		try {
+			System.out.println(employeeEmail);
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
+			Statement st = con.createStatement();
+			ResultSet rs = st.executeQuery("SELECT RO.* " + 
+					"FROM  Rental R, Employee E, Orders RO " + 
+					"WHERE E.ID=R.CustRepId AND R.OrderId=RO.Id AND E.Email=\'"+employeeEmail+ "\' AND RO.ReturnDate IS NULL");
+			while(rs.next()) {
+				Order order = new Order();
+				order.setOrderID(rs.getInt("Id"));
+				order.setDateTime(rs.getString("RDate"));
+				order.setReturnDate(rs.getString("ReturnDate"));
+				orders.add(order);
+			}
 		}
-		/*Sample data ends*/
+		catch(Exception e) {
+			System.out.println(e);
+		}
+		
 		
 		return orders;
 
@@ -93,28 +122,47 @@ public class OrderDao {
 		 * orderID is the Order's ID, given as method parameter
 		 * The method should return a "success" string if the update is successful, else return "failure"
 		 */
-		/* Sample data begins */
-		return "success";
-		/* Sample data ends */
+		
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
+			PreparedStatement st = con.prepareStatement(
+					"UPDATE mwcoulter.Orders SET ReturnDate = ? WHERE Id = ?");
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			LocalDateTime now = LocalDateTime.now();
+			st.setDate(1,Date.valueOf(dtf.format(now)));
+			st.setInt(2, Integer.valueOf(orderID));
+			st.executeUpdate();
+			return "success";
+		}
+		catch(Exception e) {
+			System.out.println(e);
+			return "failure";
+		}
 	}
 	
 	public List<Rental> getOrderHisroty(String customerID) {
 		
 		List<Rental> rentals = new ArrayList<Rental>();
 			
-		/*Sample data begins*/
-		for (int i = 0; i < 4; i++) {
-			Rental rental = new Rental();
-			
-			rental.setOrderID(1);
-			rental.setMovieID(1);
-			rental.setCustomerRepID(1);
-		
-			rentals.add(rental);
-			
-			
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
+			Statement st = con.createStatement();
+			ResultSet rs = st.executeQuery("SELECT R.* " + 
+					"FROM  Rental R, Account A " + 
+					"WHERE A.Id=R.AccountId AND A.Customer="+Integer.valueOf(customerID));
+			while(rs.next()) {
+				Rental rental = new Rental();
+				rental.setOrderID(rs.getInt("OrderId"));
+				rental.setMovieID(rs.getInt("MovieId"));
+				rental.setCustomerRepID(rs.getInt("CustomerId"));
+				rentals.add(rental);
+			}
 		}
-		/*Sample data ends*/
+		catch(Exception e) {
+			System.out.println(e);
+		}
 						
 		return rentals;
 		

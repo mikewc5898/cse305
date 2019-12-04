@@ -34,7 +34,7 @@ public class GetBestsellersForCustomerController extends HttpServlet {
 		
 		
 		MovieDao movieDao = new MovieDao();
-		List<Movie> movies = movieDao.getBestsellerMovies();
+		List<Movie> movies = movieDao.getBestsellersForCustomer((String) request.getSession(true).getAttribute("customerID"));
 		
 		request.setAttribute("movies", movies);
 		RequestDispatcher rd = request.getRequestDispatcher("showBestsellersForCustomer.jsp");

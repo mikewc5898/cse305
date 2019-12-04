@@ -66,7 +66,6 @@ public class AddEmployeeController extends HttpServlet {
 		employee.setTelephone(telephone);
 		employee.setEmployeeID(ssn);
 		employee.setHourlyRate(hourlyRate);
-		
 		EmployeeDao employeeDao = new EmployeeDao();
 		String result = employeeDao.addEmployee(employee);
 		

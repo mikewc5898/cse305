@@ -1,5 +1,13 @@
 package dao;
 
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import model.Customer;
 import model.Login;
 
 public class LoginDao {
@@ -17,14 +25,22 @@ public class LoginDao {
 		 * password, which is the password of the user, is given as method parameter
 		 * Query to verify the username and password and fetch the role of the user, must be implemented
 		 */
-		
-		/*Sample data begins*/
-		Login login = new Login();
-		//login.setRole("customerRepresentative");
-		login.setRole("manager");
-		return login;
-		/*Sample data ends*/
-		
+		Login login = new Login();	
+		try {
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
+		Statement st = con.createStatement();
+		ResultSet rs = st.executeQuery("SELECT L.* FROM Login L " +
+				"WHERE L.Username = \'" +username + "\' AND L.Password = \'" + password + "\'" );
+				rs.next();
+				login.setUsername(rs.getString("Username"));
+				login.setPassword(rs.getString("Password"));
+				login.setRole(rs.getString("Role"));
+	}
+	catch(Exception e) {
+		System.out.println(e);
+	}
+		return login;	
 	}
 	
 	public String addUser(Login login) {
@@ -36,10 +52,21 @@ public class LoginDao {
 		 * Return "success" on successful insertion of a new user
 		 * Return "failure" for an unsuccessful database operation
 		 */
-		
-		/*Sample data begins*/
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
+			PreparedStatement st = con.prepareStatement(
+					"INSERT IGNORE INTO mwcoulter.Login (Username, Password, Role) VALUES (?,?,?);");
+			st.setString(1,login.getUsername());
+			st.setString(2, login.getPassword());
+			st.setString(3, login.getRole());
+			st.executeUpdate();
+			
+		}
+		catch(Exception e) {
+			System.out.println(e);
+			return "failure";
+		}
 		return "success";
-		/*Sample data ends*/
+		}
 	}
-
-}

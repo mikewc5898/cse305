@@ -12,6 +12,7 @@ import java.util.List;
 
 import model.Customer;
 import model.Employee;
+import model.Login;
 
 public class EmployeeDao {
 	/*
@@ -133,8 +134,8 @@ public class EmployeeDao {
 			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
 			Statement st = con.createStatement();
 			st.executeUpdate(
-					"DELETE FROM mwcoulter.Employee " +
-					"WHERE `ID` = " + Integer.valueOf(employeeID));
+					"DELETE Employee, Login FROM mwcoulter.Employee INNER JOIN mwcoulter.Login WHERE "
+					+ "Email = Username AND ID = " + Integer.valueOf(employeeID));
 		}
 		catch(Exception e) {
 			System.out.println(e);
@@ -284,7 +285,7 @@ public class EmployeeDao {
 					+ "FROM Employee E"
 					+ " WHERE E.Email = \'" + username + "\'");
 			rs.next();
-			ID = String.valueOf("ID");
+			ID = String.valueOf(rs.getInt("ID"));
 			
 		} catch (Exception e) {
 			System.out.println(e);
