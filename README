@@ -1,0 +1,21 @@
+Submission of CSE 305 PA 3
+Project partners:
+-Michael Coulter
+-Heymi Dannon
+-Dhruba Roy
+
+
+NOTE:
+  For our database we have a manager login that we added as well as some pre configured customer representatives and customers
+  
+  Manager:
+  
+  Username: Manager@manager.com Password: manager
+  
+  Customer Representative:
+  
+  Username: dsmith@cs.stonybrook.edu Password: d
+  
+  Customer:
+  
+  Username: vicdu@cs.sunysb.edu Password: vic
