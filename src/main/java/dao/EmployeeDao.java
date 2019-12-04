@@ -29,6 +29,8 @@ public class EmployeeDao {
 		 * You need to handle the database insertion of the employee details and return "success" or "failure" based on result of the database insertion.
 		 */
 		try {
+			String SSN = employee.getEmployeeID();
+			SSN = SSN.replace("-","");
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
 			PreparedStatement st = con.prepareStatement(
@@ -41,7 +43,7 @@ public class EmployeeDao {
 			st = con.prepareStatement(
 					"INSERT INTO mwcoulter.Person (SSN, LastName, FirstName, Address, ZipCode, Telephone) " +
 					"VALUES (?,?,?,?,?,?);");
-			st.setInt(1,Integer.valueOf(employee.getEmployeeID()));
+			st.setInt(1,Integer.valueOf(SSN));
 			st.setString(2, employee.getLastName());
 			st.setString(3, employee.getFirstName());
 			st.setString(4, employee.getAddress());
@@ -53,13 +55,13 @@ public class EmployeeDao {
 					"INSERT INTO mwcoulter.LivesAt (ZipCode, SSN) " +
 					"VALUES (?,?);");
 			st.setInt(1,Integer.valueOf(employee.getZipCode()));
-			st.setInt(2, Integer.valueOf(employee.getEmployeeID()));
+			st.setInt(2, Integer.valueOf(SSN));
 			st.executeUpdate();
 			
 			st = con.prepareStatement("INSERT INTO mwcoulter.Employee (ID, SSN, StartDate, HourlyRate, Email) " +
 			"VALUES (?,?,?,?,?);");
-			st.setInt(1,Integer.valueOf(employee.getEmployeeID()));
-			st.setInt(2,Integer.valueOf(employee.getEmployeeID()));
+			st.setInt(1,Integer.valueOf(SSN));
+			st.setInt(2,Integer.valueOf(SSN));
 			st.setDate(3,Date.valueOf(employee.getStartDate()));
 			st.setInt(4, (int)employee.getHourlyRate());
 			st.setString(5, employee.getEmail());

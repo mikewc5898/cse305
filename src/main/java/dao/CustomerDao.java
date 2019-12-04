@@ -259,6 +259,10 @@ public class CustomerDao {
 	public String addCustomer(Customer customer) {
 
 		try {
+			String SSN = customer.getCustomerID();
+			SSN = SSN.replace("-","");
+			String CreditCard = customer.getCreditCard();
+			CreditCard = CreditCard.replace("-","");
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
 			PreparedStatement st = con.prepareStatement(
@@ -271,7 +275,7 @@ public class CustomerDao {
 			st = con.prepareStatement(
 					"INSERT INTO mwcoulter.Person (SSN, LastName, FirstName, Address, ZipCode, Telephone) " +
 					"VALUES (?,?,?,?,?,?);");
-			st.setInt(1,Integer.valueOf(customer.getCustomerID()));
+			st.setInt(1,Integer.valueOf(SSN));
 			st.setString(2, customer.getLastName());
 			st.setString(3, customer.getFirstName());
 			st.setString(4, customer.getAddress());
@@ -283,14 +287,14 @@ public class CustomerDao {
 					"INSERT INTO mwcoulter.LivesAt (ZipCode, SSN) " +
 					"VALUES (?,?);");
 			st.setInt(1,Integer.valueOf(customer.getZipCode()));
-			st.setInt(2, Integer.valueOf(customer.getCustomerID()));
+			st.setInt(2, Integer.valueOf(SSN));
 			st.executeUpdate();
 			
 			st = con.prepareStatement("INSERT INTO mwcoulter.Customer (ID, Rating, CreditCardNumber, Email) " +
 			"VALUES (?,?,?,?);");
-			st.setInt(1,Integer.valueOf(customer.getCustomerID()));
+			st.setInt(1,Integer.valueOf(SSN));
 			st.setInt(2,Integer.valueOf(customer.getRating()));
-			st.setLong(3,Long.valueOf(customer.getCreditCard()));
+			st.setLong(3,Long.valueOf(CreditCard));
 			st.setString(4, customer.getEmail());
 			st.executeUpdate();
 			
@@ -303,7 +307,7 @@ public class CustomerDao {
 			LocalDateTime now = LocalDateTime.now();
 			st.setDate(2,Date.valueOf(dtf.format(now)));
 			st.setString(3,"limited");
-			st.setInt(4, Integer.valueOf(customer.getCustomerID()));
+			st.setInt(4, Integer.valueOf(SSN));
 			st.executeUpdate();
 		}
 		catch(Exception e) {
@@ -324,15 +328,17 @@ public class CustomerDao {
 		
 		try {
 			String SSN = customer.getCustomerID();
-			System.out.println(SSN);
+			SSN = SSN.replace("-","");
+			String CreditCard = customer.getCreditCard();
+			CreditCard = CreditCard.replace("-","");
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://mysql3.cs.stonybrook.edu:3306/mwcoulter?useSSL=false","mwcoulter","111030721");
 			PreparedStatement st = con.prepareStatement(
 					"UPDATE mwcoulter.Customer SET Email = ?, Rating = ?, CreditCardNumber = ?  WHERE Id = ?");
 			st.setString(1, customer.getEmail());
 			st.setInt(2, (int)customer.getRating());
-			st.setFloat(3, Float.valueOf(customer.getCreditCard()));
-			st.setInt(4, Integer.valueOf(customer.getCustomerID()));
+			st.setLong(3, Long.valueOf(CreditCard));
+			st.setInt(4, Integer.valueOf(SSN));
 			st.executeUpdate();
 			
 			st = con.prepareStatement(
@@ -341,13 +347,13 @@ public class CustomerDao {
 			st.setString(2, customer.getFirstName());
 			st.setString(3, customer.getAddress());
 			st.setInt(4, customer.getZipCode());
-			st.setInt(5, Integer.valueOf(customer.getCustomerID()));
+			st.setInt(5, Integer.valueOf(SSN));
 			st.executeUpdate();
 			
 			st = con.prepareStatement(
 					"UPDATE mwcoulter.LivesAt SET ZipCode = ? WHERE SSN = ?");
 			st.setInt(1, customer.getZipCode());
-			st.setInt(2, Integer.valueOf(customer.getCustomerID()));
+			st.setInt(2, Integer.valueOf(SSN));
 			st.executeUpdate();
 			
 			st = con.prepareStatement(
